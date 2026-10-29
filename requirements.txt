@@ -4,3 +4,4 @@ google-genai>=1.0.0
 youtube-transcript-api>=1.2.0
 chromadb>=1.0.0
 sentence-transformers>=4.0.0
+gunicorn

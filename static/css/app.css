@@ -1,0 +1,50 @@
+
+/* LearnLens AI - responsive page improvements */
+.feature {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.feature:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px #273e7018;
+}
+
+.feature h3 {
+    overflow-wrap: anywhere;
+}
+
+.feature .btn {
+    align-self: flex-start;
+}
+
+.recent-link {
+    text-decoration: none;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.recent-link:hover {
+    border-color: var(--blue);
+    background: #f7f9ff;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid #8aa8f0;
+    outline-offset: 3px;
+}
+
+@media (max-width: 576px) {
+    .feature .btn {
+        align-self: stretch;
+    }
+
+    .recent-link {
+        align-items: flex-start;
+    }
+}

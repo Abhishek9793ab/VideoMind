@@ -1,0 +1,45 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Videos | LearnLens AI{% endblock %}
+
+{% block content %}
+<section class="container page">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <p class="muted mb-1">YOUR PERSONAL LIBRARY</p>
+            <h1>My Videos</h1>
+            <p class="muted mb-0">
+                Open a processed video to review its transcript and study materials.
+            </p>
+        </div>
+        <a href="/" class="btn btn-primary">+ Add Video</a>
+    </div>
+
+    {% if videos %}
+        <div class="row g-3">
+            {% for video in videos %}
+                <div class="col-12 col-md-6 col-xl-4">
+                    <article class="feature h-100 d-flex flex-column">
+                        <b aria-hidden="true">▶</b>
+                        <h3>{{ video.title|default:"Untitled Video" }}</h3>
+                        <p class="muted">Your processed learning video.</p>
+                        <a href="{% url 'workspace' video.id %}"
+                           class="btn btn-outline-primary mt-auto">
+                            Open Workspace →
+                        </a>
+                    </article>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="feature text-center py-5">
+            <h3>Your library is waiting</h3>
+            <p class="muted">
+                Add a YouTube video to create your personal learning workspace.
+            </p>
+            <a href="/" class="btn btn-primary">Process a Video</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,988 @@
+
+{% extends "base.html" %}
+
+{% block title %}LearnLens AI · Your Personal AI Tutor{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===== LEARNLENS PREMIUM DARK THEME ===== */
+.home-page {
+    --bg: #050506;
+    --panel: #101014;
+    --purple: #b68aff;
+    --purple-bright: #a855f7;
+    --muted: #aaa5b8;
+    background: var(--bg);
+    color: #fff;
+    overflow: hidden;
+    margin: -1.5rem 0 0;
+}
+
+.home-page .container {
+    max-width: 1180px;
+}
+
+.home-page section {
+    position: relative;
+}
+
+.home-page .eyebrow {
+    color: #c5a2ff;
+    font-size: .76rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 13px;
+}
+
+.home-page a {
+    text-decoration: none;
+}
+
+/* ===== HERO ===== */
+.home-page .hero {
+    min-height: 690px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    padding: 65px 0 85px;
+    isolation: isolate;
+    border-bottom: 1px solid #28232f;
+}
+
+.home-page .hero::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: 600px;
+    height: 480px;
+    top: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(
+        ellipse,
+        rgba(117, 57, 209, .19),
+        rgba(76, 29, 149, .07) 40%,
+        transparent 72%
+    );
+    pointer-events: none;
+}
+
+.home-page .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 16px;
+    margin-bottom: 23px;
+    color: #d8bfff;
+    border: 1px solid rgba(190, 151, 255, .35);
+    border-radius: 50px;
+    background: rgba(138, 75, 226, .09);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: 1.7px;
+    text-transform: uppercase;
+}
+
+.home-page .hero-badge i {
+    color: #d7b4ff;
+}
+
+.home-page .hero h1 {
+    max-width: 930px;
+    margin: 0 auto 23px;
+    color: #fff;
+    font-size: clamp(2.8rem, 7.4vw, 6.2rem);
+    font-weight: 500;
+    line-height: 1.02;
+    letter-spacing: -4px;
+}
+
+.home-page .hero h1 .gradient-text {
+    display: block;
+    padding-bottom: 7px;
+    font-weight: 800;
+    background: linear-gradient(
+        100deg,
+        #d8c1ff 5%,
+        #b98aff 43%,
+        #8b5cf6 72%,
+        #e1b7ff 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.home-page .hero-description {
+    max-width: 670px;
+    margin: 0 auto;
+    color: #b8b3c3;
+    font-size: 1.04rem;
+    line-height: 1.9;
+}
+
+/* ===== 3D ABSTRACT ORBS ===== */
+.home-page .orb-scene {
+    position: relative;
+    width: 310px;
+    height: 165px;
+    margin: 0 auto 17px;
+    perspective: 800px;
+}
+
+.home-page .orb {
+    position: absolute;
+    display: block;
+    border-radius: 38% 62% 61% 39% / 42% 42% 58% 58%;
+    box-shadow:
+        inset -9px -12px 23px rgba(28, 8, 65, .30),
+        inset 7px 8px 18px rgba(255, 255, 255, .55),
+        0 15px 32px rgba(0, 0, 0, .38);
+    animation: orbFloat 5s ease-in-out infinite;
+}
+
+.home-page .orb-one {
+    width: 78px;
+    height: 104px;
+    left: 46px;
+    top: 29px;
+    transform: rotate(32deg);
+    background: linear-gradient(145deg, #c5ffff, #69c8df 55%, #7c8cff);
+}
+
+.home-page .orb-two {
+    width: 91px;
+    height: 96px;
+    left: 105px;
+    top: 55px;
+    transform: rotate(-24deg);
+    background: linear-gradient(140deg, #e0e4ff, #9b9cf5 52%, #8063d9);
+    animation-delay: -.8s;
+}
+
+.home-page .orb-three {
+    width: 82px;
+    height: 90px;
+    left: 165px;
+    top: 76px;
+    transform: rotate(25deg);
+    background: linear-gradient(145deg, #df9aff, #a855f7 53%, #6914bc);
+    animation-delay: -1.7s;
+}
+
+.home-page .orb-flower {
+    position: absolute;
+    width: 85px;
+    height: 85px;
+    top: 0;
+    right: 31px;
+    filter: drop-shadow(0 13px 16px rgba(94, 30, 164, .4));
+    animation: flowerFloat 6s ease-in-out infinite;
+}
+
+.home-page .orb-flower span {
+    position: absolute;
+    width: 32px;
+    height: 48px;
+    top: 18px;
+    left: 27px;
+    border-radius: 50%;
+    transform-origin: 50% 25px;
+    background: linear-gradient(150deg, #c4fbff, #a78bfa 70%, #a855f7);
+    box-shadow: inset -3px -5px 7px rgba(61, 21, 110, .25);
+}
+
+.home-page .orb-flower span:nth-child(1) { transform: rotate(0deg) translateY(-15px); }
+.home-page .orb-flower span:nth-child(2) { transform: rotate(60deg) translateY(-15px); }
+.home-page .orb-flower span:nth-child(3) { transform: rotate(120deg) translateY(-15px); }
+.home-page .orb-flower span:nth-child(4) { transform: rotate(180deg) translateY(-15px); }
+.home-page .orb-flower span:nth-child(5) { transform: rotate(240deg) translateY(-15px); }
+.home-page .orb-flower span:nth-child(6) { transform: rotate(300deg) translateY(-15px); }
+
+@keyframes orbFloat {
+    0%, 100% { margin-top: 0; }
+    50% { margin-top: -11px; }
+}
+
+@keyframes flowerFloat {
+    0%, 100% { transform: translateY(0) rotate(-8deg); }
+    50% { transform: translateY(-10px) rotate(8deg); }
+}
+
+/* ===== YOUTUBE URL FORM ===== */
+.home-page .url-form {
+    max-width: 790px;
+    margin: 35px auto 17px;
+    padding: 7px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #393044;
+    border-radius: 17px;
+    background: #111015;
+    box-shadow:
+        0 15px 50px rgba(0, 0, 0, .42),
+        0 0 35px rgba(142, 77, 230, .07);
+    transition: border-color .25s, box-shadow .25s;
+}
+
+.home-page .url-form:focus-within {
+    border-color: #9863df;
+    box-shadow: 0 0 0 4px rgba(168, 85, 247, .09);
+}
+
+.home-page .url-form .form-control {
+    min-width: 0;
+    min-height: 56px;
+    padding-left: 18px;
+    color: #fff;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.home-page .url-form .form-control::placeholder {
+    color: #9b94a8;
+}
+
+.home-page .url-form .form-control:focus {
+    background: transparent;
+    color: #fff;
+}
+
+.home-page .url-form .btn {
+    min-height: 56px;
+    padding: 0 23px;
+    flex-shrink: 0;
+    color: #fff;
+    font-weight: 700;
+    border: 1px solid #a36af1;
+    border-radius: 12px;
+    background: linear-gradient(110deg, #8b5cf6, #a855f7 55%, #7c3aed);
+    box-shadow: 0 5px 22px rgba(139, 92, 246, .23);
+    transition: transform .2s, box-shadow .2s;
+}
+
+.home-page .url-form .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 9px 27px rgba(168, 85, 247, .35);
+}
+
+.home-page .hero-hint {
+    color: #8f899c;
+    font-size: .85rem;
+}
+
+.home-page .hero-hint i {
+    color: #bd9aff;
+}
+
+.home-page .hero-benefits {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 13px 26px;
+    margin-top: 30px;
+    color: #bdb5cc;
+    font-size: .87rem;
+}
+
+.home-page .hero-benefits span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.home-page .hero-benefits i {
+    color: #c1a0ff;
+}
+
+/* ===== SECTION HEADINGS ===== */
+.home-page .section-block {
+    padding: 90px 0;
+    border-bottom: 1px solid #28232f;
+}
+
+.home-page .section-heading {
+    margin-bottom: 38px;
+}
+
+.home-page .section-heading h2,
+.home-page .recent-heading {
+    color: #fff;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 600;
+    letter-spacing: -1.8px;
+}
+
+.home-page .section-heading p,
+.home-page .recent-subtitle {
+    color: #aaa3b8;
+    line-height: 1.8;
+}
+
+/* ===== FEATURE CARDS ===== */
+.home-page .feature-card {
+    position: relative;
+    height: 100%;
+    padding: 28px 25px;
+    overflow: hidden;
+    border: 1px solid #30283b;
+    border-radius: 19px;
+    background: linear-gradient(145deg, #151219, #0b0a0e);
+    transition: transform .25s, border-color .25s, box-shadow .25s;
+}
+
+.home-page .feature-card::before {
+    content: "";
+    position: absolute;
+    top: -70px;
+    right: -70px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(153, 92, 238, .09);
+    filter: blur(22px);
+    pointer-events: none;
+}
+
+.home-page .feature-card:hover {
+    transform: translateY(-6px);
+    border-color: #8053b3;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, .32);
+}
+
+.home-page .feature-icon {
+    display: grid;
+    place-items: center;
+    width: 55px;
+    height: 55px;
+    margin-bottom: 22px;
+    border: 1px solid rgba(255, 255, 255, .16);
+    border-radius: 16px;
+    color: white;
+    font-size: 1.4rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25),
+                0 8px 22px rgba(0, 0, 0, .22);
+}
+
+.home-page .icon-purple {
+    background: linear-gradient(145deg, #b68aff, #7135b8);
+}
+.home-page .icon-blue {
+    background: linear-gradient(145deg, #7b9dff, #3947b8);
+}
+.home-page .icon-pink {
+    background: linear-gradient(145deg, #ff9be5, #a52bce);
+}
+.home-page .icon-teal {
+    background: linear-gradient(145deg, #8debe5, #237eaa);
+}
+
+.home-page .feature-card h3 {
+    color: #f8f5ff;
+    font-size: 1.08rem;
+    font-weight: 750;
+    margin-bottom: 12px;
+}
+
+.home-page .feature-card p {
+    color: #aaa3b8;
+    font-size: .91rem;
+    line-height: 1.85;
+    margin-bottom: 0;
+}
+
+/* ===== RECENT VIDEOS ===== */
+.home-page .recent-section {
+    padding: 85px 0;
+    border-bottom: 1px solid #28232f;
+}
+
+.home-page .recent-card {
+    padding: 12px 25px;
+    border: 1px solid #30283b;
+    border-radius: 20px;
+    background: #100e13;
+}
+
+.home-page .recent-title {
+    color: #f6f1ff;
+    font-size: 1.06rem;
+    font-weight: 700;
+}
+
+.home-page .recent-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 18px 0;
+    border-bottom: 1px solid #29232f;
+}
+
+.home-page .recent-item:last-child {
+    border-bottom: 0;
+}
+
+.home-page .recent-video-name {
+    min-width: 0;
+    color: #e7e0f0;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.home-page .recent-video-name i {
+    color: #c08cff;
+    margin-right: 9px;
+}
+
+.home-page .recent-item .btn {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    font-size: .83rem;
+}
+
+.home-page .empty-state {
+    padding: 35px 10px;
+    text-align: center;
+    color: #aaa3b8;
+}
+
+.home-page .empty-state > i {
+    display: block;
+    margin-bottom: 15px;
+    color: #c49aff;
+    font-size: 2.3rem;
+}
+
+.home-page .empty-state h3 {
+    color: #fff;
+}
+
+/* ===== BUTTONS ===== */
+.home-page .btn-outline-primary {
+    color: #d5baff;
+    border-color: #7e55ac;
+    background: transparent;
+}
+
+.home-page .btn-outline-primary:hover {
+    color: #fff;
+    border-color: #a878f2;
+    background: rgba(153, 92, 238, .15);
+}
+
+.home-page .btn-primary {
+    color: #fff;
+    border-color: #8b5cf6;
+    background: linear-gradient(110deg, #8b5cf6, #a855f7);
+}
+
+/* ===== CTA ===== */
+.home-page .cta-section {
+    padding: 0 0 80px;
+}
+
+.home-page .cta-panel {
+    position: relative;
+    overflow: hidden;
+    padding: 42px;
+    border: 1px solid #443052;
+    border-radius: 24px;
+    background:
+        radial-gradient(ellipse at 100% 0%, rgba(168, 85, 247, .18), transparent 48%),
+        linear-gradient(125deg, #17121e, #0d0b11);
+}
+
+.home-page .cta-panel h2 {
+    color: #fff;
+    font-weight: 750;
+}
+
+.home-page .cta-panel p {
+    color: #b5aabd;
+    margin-bottom: 0;
+}
+
+/* ===== FLOATING MUSIC BUTTON ===== */
+.music-float {
+    position: fixed;
+    z-index: 1050;
+    top: 48%;
+    right: 19px;
+    width: 55px;
+    height: 55px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(219, 191, 255, .55);
+    border-radius: 19px;
+    color: #fff;
+    font-size: 1.45rem;
+    background: linear-gradient(145deg, #bb91ff, #762fd0 62%, #43116f);
+    box-shadow:
+        inset 0 2px 5px rgba(255, 255, 255, .38),
+        0 8px 24px rgba(126, 34, 206, .38);
+    transform: perspective(300px) rotateY(-9deg);
+    transition: transform .25s, box-shadow .25s;
+}
+
+.music-float:hover {
+    color: #fff;
+    transform: perspective(300px) rotateY(0deg) translateY(-3px);
+    box-shadow: 0 12px 30px rgba(168, 85, 247, .48);
+}
+
+.music-float::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border: 1px solid rgba(192, 132, 252, .2);
+    border-radius: 22px;
+    animation: musicPulse 2.7s ease-out infinite;
+    pointer-events: none;
+}
+
+@keyframes musicPulse {
+    0% { transform: scale(.94); opacity: .7; }
+    100% { transform: scale(1.35); opacity: 0; }
+}
+
+.music-tooltip {
+    position: fixed;
+    z-index: 1049;
+    top: calc(48% + 14px);
+    right: 85px;
+    padding: 8px 12px;
+    border: 1px solid #42314f;
+    border-radius: 9px;
+    color: #eee4ff;
+    background: #17111e;
+    font-size: .78rem;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(5px);
+    transition: opacity .2s, transform .2s;
+}
+
+.music-float:hover + .music-tooltip,
+.music-float:focus-visible + .music-tooltip {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 767px) {
+    .home-page .hero {
+        min-height: auto;
+        padding: 50px 0 58px;
+    }
+
+    .home-page .hero h1 {
+        font-size: clamp(2.65rem, 12vw, 4.3rem);
+        letter-spacing: -2px;
+    }
+
+    .home-page .orb-scene {
+        transform: scale(.84);
+        margin-top: -10px;
+        margin-bottom: -1px;
+    }
+
+    .home-page .hero-description {
+        font-size: .96rem;
+    }
+
+    .home-page .url-form {
+        flex-direction: column;
+        padding: 9px;
+    }
+
+    .home-page .url-form .form-control {
+        width: 100%;
+        min-height: 49px;
+    }
+
+    .home-page .url-form .btn {
+        width: 100%;
+        min-height: 52px;
+    }
+
+    .home-page .hero-benefits {
+        gap: 12px 16px;
+        font-size: .82rem;
+    }
+
+    .home-page .section-block,
+    .home-page .recent-section {
+        padding: 58px 0;
+    }
+
+    .home-page .feature-card {
+        padding: 23px;
+    }
+
+    .home-page .recent-item {
+        align-items: flex-start;
+    }
+
+    .home-page .cta-panel {
+        padding: 27px 23px;
+    }
+
+    .music-float {
+        width: 46px;
+        height: 46px;
+        right: 12px;
+        top: auto;
+        bottom: 22px;
+        border-radius: 15px;
+        font-size: 1.2rem;
+    }
+
+    .music-tooltip {
+        top: auto;
+        bottom: 30px;
+        right: 67px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .home-page *,
+    .home-page *::before,
+    .home-page *::after,
+    .music-float::after {
+        animation: none !important;
+        transition: none !important;
+    }
+
+}
+
+/* ===== VISIBILITY FIX: LEARNLENS AI ===== */
+.home-page {
+    background: #050506 !important;
+    color: #ffffff !important;
+}
+
+.home-page .hero,
+.home-page .section-block,
+.home-page .recent-section,
+.home-page .cta-section {
+    background-color: #050506 !important;
+}
+
+.home-page .hero h1 {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+}
+
+.home-page .hero h1 .gradient-text {
+    background: linear-gradient(90deg, #d9bdff, #b47aff, #e6b5ff) !important;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    opacity: 1 !important;
+}
+
+.home-page .hero-description,
+.home-page .section-heading p,
+.home-page .feature-card p,
+.home-page .recent-subtitle,
+.home-page .cta-panel p {
+    color: #c5bfce !important;
+    opacity: 1 !important;
+}
+
+.home-page .section-heading h2,
+.home-page .recent-heading,
+.home-page .feature-card h3,
+.home-page .cta-panel h2,
+.home-page .empty-state h3 {
+    color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+.home-page .feature-card,
+.home-page .recent-card,
+.home-page .cta-panel {
+    background-color: #111014 !important;
+}
+
+.home-page .url-form {
+    background: #151219 !important;
+    border-color: #574268 !important;
+}
+
+.home-page .url-form input,
+.home-page .url-form input:focus {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    background: transparent !important;
+}
+
+.home-page .url-form input::placeholder {
+    color: #c0b7cc !important;
+    opacity: 1 !important;
+}
+
+.home-page .hero-badge,
+.home-page .hero-hint,
+.home-page .hero-benefits {
+    opacity: 1 !important;
+}
+
+.home-page .hero-badge {
+    color: #dec9ff !important;
+}
+
+.home-page .hero-hint,
+.home-page .hero-benefits {
+    color: #c5bfce !important;
+}
+
+.home-page .feature-card,
+.home-page .recent-card {
+    color: #ffffff !important;
+}
+
+.home-page .btn-primary {
+    color: #ffffff !important;
+    background: linear-gradient(110deg, #8b5cf6, #a855f7) !important;
+}
+
+.home-page .recent-video-name {
+    color: #ffffff !important;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="home-page">
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+
+            <div class="hero-badge">
+                <i class="bi bi-stars"></i>
+                Your Personal AI Learning Companion
+            </div>
+
+            <!-- CSS-generated 3D artwork -->
+            <div class="orb-scene" aria-hidden="true">
+                <span class="orb orb-one"></span>
+                <span class="orb orb-two"></span>
+                <span class="orb orb-three"></span>
+
+                <div class="orb-flower">
+                    <span></span><span></span><span></span>
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+
+            <h1>
+                Turn Any Video Into
+                <span class="gradient-text">Your Personal Tutor</span>
+            </h1>
+
+            <p class="hero-description">
+                Transform YouTube lessons into clear explanations,
+                intelligent summaries, structured revision notes
+                and practice questions — all in one learning space.
+            </p>
+
+            <form method="post"
+                  action="{% url 'process_video' %}"
+                  class="url-form">
+                {% csrf_token %}
+
+                <input
+                    type="url"
+                    name="url"
+                    class="form-control"
+                    placeholder="Paste your YouTube video URL here..."
+                    aria-label="YouTube video URL"
+                    required
+                >
+
+                <button type="submit" class="btn">
+                    Start Learning
+                    <i class="bi bi-arrow-up-right ms-1"></i>
+                </button>
+            </form>
+
+            <p class="hero-hint">
+                <i class="bi bi-play-circle me-1"></i>
+                Paste a public YouTube link to get started.
+            </p>
+
+            <div class="hero-benefits">
+                <span><i class="bi bi-chat-square-text"></i> Ask questions</span>
+                <span><i class="bi bi-journal-text"></i> Generate notes</span>
+                <span><i class="bi bi-lightning-charge"></i> Learn at your pace</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section-block">
+        <div class="container">
+            <div class="section-heading text-center">
+                <div class="eyebrow">Learn beyond watching</div>
+                <h2>Your AI Study Toolkit</h2>
+                <p>
+                    Turn long videos into focused learning sessions
+                    with tools designed to help you understand and revise.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <article class="feature-card">
+                        <div class="feature-icon icon-purple">
+                            <i class="bi bi-chat-dots"></i>
+                        </div>
+                        <h3>Ask Your AI Tutor</h3>
+                        <p>
+                            Ask questions about a lesson and get explanations
+                            based on its available transcript.
+                        </p>
+                    </article>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <article class="feature-card">
+                        <div class="feature-icon icon-blue">
+                            <i class="bi bi-journal-bookmark"></i>
+                        </div>
+                        <h3>Smart Summaries</h3>
+                        <p>
+                            Understand key concepts and important takeaways
+                            without reviewing every minute.
+                        </p>
+                    </article>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <article class="feature-card">
+                        <div class="feature-icon icon-pink">
+                            <i class="bi bi-card-checklist"></i>
+                        </div>
+                        <h3>Notes & MCQs</h3>
+                        <p>
+                            Create revision-friendly notes and practice
+                            questions from your learning material.
+                        </p>
+                    </article>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <article class="feature-card">
+                        <div class="feature-icon icon-teal">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <h3>Video Timestamps</h3>
+                        <p>
+                            Use transcript timestamps to locate important
+                            moments and revisit useful explanations.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RECENT VIDEOS -->
+    <section class="recent-section">
+        <div class="container">
+
+            <div class="d-flex flex-wrap justify-content-between
+                        align-items-end gap-3 mb-4">
+                <div>
+                    <div class="eyebrow">Your learning library</div>
+                    <h2 class="recent-heading mb-2">
+                        Recently Processed Videos
+                    </h2>
+                    <p class="recent-subtitle mb-0">
+                        Continue exploring your saved learning sessions.
+                    </p>
+                </div>
+
+                <a href="{% url 'my_videos' %}"
+                   class="btn btn-outline-primary">
+                    View All
+                    <i class="bi bi-arrow-up-right ms-1"></i>
+                </a>
+            </div>
+
+            <div class="recent-card">
+                {% for video in videos %}
+                    <div class="recent-item">
+                        <div class="recent-video-name">
+                            <i class="bi bi-youtube"></i>
+                            {{ video.title|default:"YouTube Learning Session" }}
+                        </div>
+
+                        <a href="{% url 'workspace' video.id %}"
+                           class="btn btn-sm btn-outline-primary">
+                            Open
+                            <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                {% empty %}
+                    <div class="empty-state">
+                        <i class="bi bi-collection-play"></i>
+                        <h3 class="h5">Your learning journey starts here</h3>
+                        <p class="mb-3">
+                            Add a YouTube link above to create your first
+                            learning session.
+                        </p>
+                        <a href="#"
+                           class="btn btn-primary"
+                           onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
+                            Start Learning
+                            <i class="bi bi-arrow-up ms-1"></i>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-panel d-flex flex-column flex-md-row
+                        align-items-md-center justify-content-between gap-4">
+                <div>
+                    <div class="eyebrow">Study smarter</div>
+                    <h2 class="h3 mb-2">Make every video count.</h2>
+                    <p>
+                        Turn what you watch into something you remember.
+                    </p>
+                </div>
+
+                <a href="#"
+                   class="btn btn-primary flex-shrink-0"
+                   onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
+                    Try LearnLens AI
+                    <i class="bi bi-arrow-up-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- Floating music icon: decorative shortcut, no audio source configured -->
+<button type="button"
+        class="music-float"
+        aria-label="Music icon"
+        title="Focus mode">
+    <i class="bi bi-music-note-beamed"></i>
+</button>
+<span class="music-tooltip" aria-hidden="true">Focus mode</span>
+{% endblock %}

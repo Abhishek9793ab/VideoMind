@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Study Tools | LearnLens AI{% endblock %}
+
+{% block content %}
+<style>
+    .study-page{max-width:1180px;margin:auto;padding:34px 18px 60px;color:#172b4d}
+    .hero{padding:30px;margin-bottom:25px;border:1px solid #dbe7f5;border-radius:20px;background:linear-gradient(120deg,#fff,#edf5ff)}
+    .eyebrow{color:#2563eb;font-size:.78rem;font-weight:800;letter-spacing:1.5px}
+    .hero h1{font-weight:850;letter-spacing:-1px;margin:8px 0}
+    .muted{color:#64748b}
+    .panel,.tool-card,.result-panel{background:#fff;border:1px solid #e2e8f0;border-radius:17px;box-shadow:0 8px 24px rgba(15,23,42,.045)}
+    .panel{padding:24px;margin-bottom:24px}
+    .panel h2{font-size:1.25rem;font-weight:800}
+    .study-select{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;color:#172b4d}
+    .tool-card{height:100%;padding:23px;transition:.2s}
+    .tool-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px #0f172a12}
+    .tool-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:#eaf2ff;color:#1d4ed8;font-size:1.35rem;margin-bottom:15px}
+    .tool-card h3{font-size:1.15rem;font-weight:800}
+    .tool-card p{min-height:48px;color:#64748b}
+    .study-btn{width:100%;padding:12px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:750}
+    .study-btn:hover{background:#1d4ed8}
+    .result-panel{margin-top:28px;padding:clamp(18px,3vw,30px)}
+    .result-heading{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #e2e8f0;padding-bottom:18px;margin-bottom:20px}
+    .result-heading h2{font-size:1.45rem;font-weight:850;margin:5px 0}
+    .result-content{white-space:normal;overflow-wrap:anywhere;line-height:1.85;color:#253858}
+    .result-content h1,.result-content h2,.result-content h3{color:#163b73;margin-top:1.5em;font-weight:800}
+    .result-content ul,.result-content ol{padding-left:1.5rem}
+    .result-content hr{border-color:#dbe5f1;margin:1.5rem 0}
+    .empty-state{padding:35px 20px;text-align:center;background:#f8fbff;border:1px dashed #b9cbe5;border-radius:16px}
+    @media(max-width:576px){.study-page{padding:22px 12px 40px}.hero,.panel,.tool-card{padding:18px}}
+    @media print{
+        body{background:#fff!important;color:#111!important}
+        nav,footer,.no-print,.alert{display:none!important}
+        main{width:100%!important}
+        .study-page{max-width:none;padding:0}
+        .hero,.panel,.tool-card{display:none!important}
+        .result-panel{border:0;box-shadow:none;padding:0;margin:0}
+        .result-content{font-size:11pt;color:#111}
+        .result-content h1,.result-content h2,.result-content h3{color:#111;break-after:avoid}
+        .result-content li{break-inside:avoid}
+    }
+</style>
+
+<section class="study-page">
+    <header class="hero">
+        <div class="eyebrow">LEARN SMARTER · REVISE FASTER</div>
+        <h1>Study Tools</h1>
+        <p class="muted mb-0">Generate video-specific summaries, structured revision notes, and practice questions.</p>
+    </header>
+
+    {% if generation_error %}
+        <div class="alert alert-danger">{{ generation_error }}</div>
+    {% endif %}
+
+    {% if videos %}
+        <div class="panel no-print">
+            <h2>Choose a video</h2>
+            <p class="muted">Each study tool uses the selected video's saved transcript.</p>
+            <label for="studyVideo" class="form-label fw-semibold">Processed YouTube videos</label>
+            <select id="studyVideo" class="study-select">
+                {% for video in videos %}
+                    <option value="{{ video.id }}"
+                        data-workspace="{% url 'workspace' video.id %}"
+                        {% if selected_video and selected_video.id == video.id %}selected{% endif %}>
+                        {{ video.title|default:video.youtube_id }} · {{ video.youtube_id }}
+                    </option>
+                {% endfor %}
+            </select>
+            {% if selected_video %}
+                <p class="small muted mt-2 mb-0">Selected video ID: {{ selected_video.youtube_id }}</p>
+            {% endif %}
+        </div>
+
+        <div class="row g-4 no-print">
+            {% for action, heading, description, icon in tool_cards %}
+                <div class="col-12 col-md-6 col-xl-4">
+                    <article class="tool-card">
+                        <div class="tool-icon">{{ icon }}</div>
+                        <h3>{{ heading }}</h3>
+                        <p>{{ description }}</p>
+                        <form method="post" class="study-action">
+                            {% csrf_token %}
+                            <input type="hidden" name="video_id" value="{{ selected_video.id }}">
+                            <input type="hidden" name="action" value="{{ action }}">
+                            <button type="submit" class="study-btn">Generate / Regenerate →</button>
+                        </form>
+                    </article>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if generated_note %}
+            <section class="result-panel" id="generatedResult">
+                <div class="result-heading">
+                    <div>
+                        <div class="eyebrow">GENERATED STUDY MATERIAL</div>
+                        <h2>{{ generated_note.title }}</h2>
+                        <div class="small muted">
+                            Video: {{ selected_video.title }} · ID: {{ selected_video.youtube_id }}
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap no-print">
+                        <button type="button" class="btn btn-primary" onclick="window.print()">Download PDF / Print</button>
+                        <a href="{% url 'workspace' selected_video.id %}" class="btn btn-outline-primary">Open Workspace</a>
+                    </div>
+                </div>
+                <article class="result-content">{{ generated_note.content|linebreaks }}</article>
+            </section>
+        {% endif %}
+
+        <div class="panel mt-4 no-print">
+            <h2>Video Workspace</h2>
+            <p class="muted">Open this video's transcript, chat, and saved study materials.</p>
+            {% if selected_video %}
+                <a id="openWorkspace" href="{% url 'workspace' selected_video.id %}" class="btn btn-outline-primary">Open Workspace →</a>
+            {% endif %}
+        </div>
+
+        <script>
+        (() => {
+            const select = document.getElementById("studyVideo");
+            if (!select) return;
+
+            function updateSelection() {
+                const id = select.value;
+                document.querySelectorAll(".study-action").forEach(form => {
+                    const hidden = form.querySelector('input[name="video_id"]');
+                    if (hidden) hidden.value = id;
+                });
+
+                const option = select.options[select.selectedIndex];
+                const workspace = document.getElementById("openWorkspace");
+                if (workspace && option) workspace.href = option.dataset.workspace;
+            }
+
+            select.addEventListener("change", updateSelection);
+            updateSelection();
+        })();
+        </script>
+    {% else %}
+        <div class="empty-state">
+            <h2>No processed videos yet</h2>
+            <p class="muted">Process a YouTube video before generating study material.</p>
+            <a href="{% url 'home' %}" class="btn btn-primary">Add YouTube Video</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

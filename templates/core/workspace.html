@@ -1,0 +1,878 @@
+
+{% extends "base.html" %}
+{% load study_format %}
+
+{% block title %}Video Workspace · LearnLens AI{% endblock %}
+
+{% block content %}
+<style>
+.workspace {
+    padding: 28px 0 48px;
+    color: var(--bs-body-color, #212529);
+}
+
+.workspace-title {
+    margin-bottom: 28px;
+}
+
+.workspace-title h1 {
+    margin: 16px 0 8px;
+    font-size: clamp(1.65rem, 3vw, 2.2rem);
+    font-weight: 750;
+    letter-spacing: -0.6px;
+}
+
+.workspace-title p,
+.muted {
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+.workspace-title a {
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.panel,
+.study {
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 18px;
+    background: var(--bs-body-bg, #fff);
+    overflow: hidden;
+    min-width: 0;
+}
+
+.panel > header {
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+}
+
+.panel > header a {
+    font-size: 0.86rem;
+    text-decoration: none;
+}
+
+.player {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #111;
+}
+
+.player iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.tabs {
+    display: flex;
+    gap: 6px;
+    padding: 12px 16px 0;
+    border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+    overflow-x: auto;
+}
+
+.tabs button {
+    flex-shrink: 0;
+    padding: 10px 14px;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    color: var(--bs-secondary-color, #6c757d);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.tabs button.active {
+    color: var(--bs-primary, #0d6efd);
+    border-bottom-color: var(--bs-primary, #0d6efd);
+}
+
+.pane {
+    display: none;
+    padding: 20px;
+}
+
+.pane.active {
+    display: block;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 16px 0 24px;
+}
+
+.actions form {
+    margin: 0;
+}
+
+.actions button {
+    border-radius: 9px;
+}
+
+.pane h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 22px 0 14px;
+}
+
+.segment {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 10px;
+    background: transparent;
+    color: inherit;
+    line-height: 1.6;
+    cursor: pointer;
+}
+
+.segment:hover {
+    background: var(--bs-tertiary-bg, #f8f9fa);
+    border-color: var(--bs-primary, #0d6efd);
+}
+
+.segment span {
+    flex-shrink: 0;
+    color: var(--bs-primary, #0d6efd);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.transcript-row {
+    white-space: pre-wrap;
+}
+
+.note {
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 14px;
+    margin-bottom: 18px;
+    overflow: hidden;
+}
+
+.note h3 {
+    margin: 0;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+    background: var(--bs-tertiary-bg, #f8f9fa);
+    font-size: 1.05rem;
+    font-weight: 750;
+}
+
+.note-content {
+    padding: 22px;
+    line-height: 1.8;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+.note-content h1,
+.note-content h2,
+.note-content h3,
+.note-content h4,
+.message h1,
+.message h2,
+.message h3,
+.message h4 {
+    margin: 22px 0 12px;
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+.note-content h1,
+.message h1 {
+    font-size: 1.65rem;
+}
+
+.note-content h2,
+.message h2 {
+    font-size: 1.35rem;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+}
+
+.note-content h3,
+.message h3 {
+    font-size: 1.12rem;
+}
+
+.note-content p,
+.message p {
+    margin-bottom: 14px;
+}
+
+.note-content ul,
+.note-content ol,
+.message ul,
+.message ol {
+    padding-left: 26px;
+    margin: 12px 0 18px;
+}
+
+.note-content li,
+.message li {
+    margin-bottom: 8px;
+}
+
+.note-content blockquote,
+.message blockquote {
+    margin: 16px 0;
+    padding: 12px 16px;
+    border-left: 4px solid var(--bs-primary, #0d6efd);
+    background: var(--bs-tertiary-bg, #f8f9fa);
+    border-radius: 0 8px 8px 0;
+}
+
+.note-content pre,
+.message pre {
+    padding: 16px;
+    overflow-x: auto;
+    border-radius: 10px;
+    background: #171923;
+    color: #f5f5f5;
+    white-space: pre;
+}
+
+.note-content code,
+.message code {
+    padding: 2px 5px;
+    border-radius: 4px;
+    background: var(--bs-tertiary-bg, #f1f3f5);
+    overflow-wrap: anywhere;
+}
+
+.note-content pre code,
+.message pre code {
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    overflow-wrap: normal;
+}
+
+.note-content hr,
+.message hr {
+    margin: 22px 0;
+    border-color: var(--bs-border-color, #dee2e6);
+}
+
+.note-content table,
+.message table {
+    width: 100%;
+    margin: 16px 0;
+    border-collapse: collapse;
+    display: block;
+    overflow-x: auto;
+}
+
+.note-content th,
+.note-content td,
+.message th,
+.message td {
+    padding: 10px 12px;
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    text-align: left;
+}
+
+.note-content th,
+.message th {
+    background: var(--bs-tertiary-bg, #f8f9fa);
+    font-weight: 700;
+}
+
+.copy-note {
+    margin: 0 20px 20px;
+    border-radius: 8px;
+}
+
+.tutor .chat {
+    padding: 18px;
+    max-height: 620px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.bubble {
+    max-width: 96%;
+    padding: 15px 16px;
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 14px;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+}
+
+.bubble b {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.87rem;
+}
+
+.bubble.user {
+    align-self: flex-end;
+    background: var(--bs-primary-bg-subtle, #e7f1ff);
+}
+
+.bubble.assistant {
+    align-self: flex-start;
+    background: var(--bs-tertiary-bg, #f8f9fa);
+}
+
+.message {
+    white-space: normal;
+    min-width: 0;
+}
+
+.message > :first-child,
+.note-content > :first-child {
+    margin-top: 0;
+}
+
+.message > :last-child,
+.note-content > :last-child {
+    margin-bottom: 0;
+}
+
+.suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.suggestions button {
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 20px;
+    background: var(--bs-body-bg, #fff);
+    color: inherit;
+    padding: 7px 11px;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+
+.ask-form {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    padding: 16px 18px 8px;
+}
+
+.ask-form textarea {
+    resize: vertical;
+    min-width: 0;
+}
+
+.ask-form button {
+    flex-shrink: 0;
+    border-radius: 9px;
+}
+
+.disclaimer {
+    padding: 0 18px 16px;
+    margin: 8px 0 0;
+    font-size: 0.78rem;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+.study {
+    margin-top: 28px;
+    padding: 24px;
+}
+
+.study h2 {
+    font-size: 1.35rem;
+    font-weight: 750;
+}
+
+.study > p {
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+@media (max-width: 991px) {
+    .workspace .row {
+        --bs-gutter-y: 1.25rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .workspace {
+        padding-top: 18px;
+    }
+
+    .panel > header,
+    .pane {
+        padding: 15px;
+    }
+
+    .tabs {
+        padding-left: 10px;
+    }
+
+    .tutor .chat {
+        padding: 12px;
+        max-height: 500px;
+    }
+
+    .bubble {
+        max-width: 100%;
+        padding: 12px;
+    }
+
+    .ask-form {
+        padding: 12px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .ask-form button {
+        width: 100%;
+    }
+
+    .note-content {
+        padding: 15px;
+        font-size: 14px;
+    }
+
+    .study {
+        padding: 18px;
+    }
+}
+</style>
+
+<div class="container-fluid workspace">
+
+    <div class="workspace-title">
+        <a href="/">← Home</a>
+        <h1>Your Video Learning Space</h1>
+        <p>
+            Watch the lesson, ask questions, explore the transcript
+            and prepare structured study material.
+        </p>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- VIDEO AND STUDY MATERIAL -->
+        <div class="col-lg-6">
+            <section class="panel">
+
+                <header>
+                    <b>▶ {{ video.title }}</b>
+                    <a target="_blank"
+                       rel="noopener noreferrer"
+                       href="{{ video.url }}">
+                        Open on YouTube ↗
+                    </a>
+                </header>
+
+                <div class="player">
+                    <iframe
+                        id="ytplayer"
+                        src="https://www.youtube-nocookie.com/embed/{{ video.youtube_id|urlencode }}"
+                        title="YouTube video player"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+
+                <div class="tabs" role="tablist" aria-label="Video learning tabs">
+                    <button type="button"
+                            class="active"
+                            data-tab="points"
+                            role="tab"
+                            aria-selected="true">
+                        Key Points
+                    </button>
+
+                    <button type="button"
+                            data-tab="transcript"
+                            role="tab"
+                            aria-selected="false">
+                        Transcript
+                    </button>
+
+                    <button type="button"
+                            data-tab="notes"
+                            role="tab"
+                            aria-selected="false">
+                        Study Material
+                    </button>
+                </div>
+
+                <!-- KEY POINTS -->
+                <div class="pane active" id="points" role="tabpanel">
+
+                    <p class="muted">
+                        Generate and review learning material from this video.
+                    </p>
+
+                    <div class="actions">
+
+                        <form method="post"
+                              action="{% url 'generate_summary' video.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                Video Summary
+                            </button>
+                        </form>
+
+                        <form method="post"
+                              action="{% url 'generate_notes' video.id %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="btn btn-outline-primary btn-sm">
+                                Revision Notes
+                            </button>
+                        </form>
+
+                        <form method="post"
+                              action="{% url 'generate_mcqs' video.id %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="btn btn-outline-primary btn-sm">
+                                Practice MCQs
+                            </button>
+                        </form>
+
+                    </div>
+
+                    <h3>Transcript Key Moments</h3>
+
+                    {% for seg in segments|slice:":12" %}
+                        <button type="button"
+                                class="segment jump"
+                                data-time="{{ seg.start }}">
+                            <span>{{ seg.timestamp }}</span>
+                            <div>{{ seg.text|truncatechars:140 }}</div>
+                        </button>
+                    {% empty %}
+                        <p class="muted">No transcript segments available.</p>
+                    {% endfor %}
+
+                </div>
+
+                <!-- TRANSCRIPT -->
+                <div class="pane" id="transcript" role="tabpanel">
+
+                    <input
+                        id="searchTranscript"
+                        type="search"
+                        class="form-control mb-3"
+                        placeholder="Search the transcript..."
+                        aria-label="Search transcript">
+
+                    {% for seg in segments %}
+                        <button type="button"
+                                class="segment transcript-row jump"
+                                data-time="{{ seg.start }}">
+                            <span>{{ seg.timestamp }}</span>
+                            <div>{{ seg.text }}</div>
+                        </button>
+                    {% empty %}
+                        <p class="muted">No transcript available.</p>
+                    {% endfor %}
+
+                </div>
+
+                <!-- GENERATED STUDY MATERIAL -->
+                <div class="pane" id="notes" role="tabpanel">
+
+                    <p class="muted">
+                        Your summaries, revision notes and practice questions
+                        will appear here, each in its own section.
+                    </p>
+
+                    {% for note in notes %}
+                        <article class="note">
+
+                            <h3>{{ note.title }}</h3>
+
+                            <div class="note-content">{{ note.content|study_markdown }}</div>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-primary copy-note">
+                                Copy {{ note.title }}
+                            </button>
+
+                        </article>
+                    {% empty %}
+                        <p class="muted">
+                            No study material generated yet.
+                            Select Summary, Notes or MCQs above to begin.
+                        </p>
+                    {% endfor %}
+
+                </div>
+
+            </section>
+        </div>
+
+        <!-- AI TUTOR -->
+        <div class="col-lg-6">
+            <section class="panel tutor">
+
+                <header>
+                    <b>✦ Ask Your Tutor</b>
+                    <small class="muted">Grounded in the transcript</small>
+                </header>
+
+                <div class="chat" id="chat" aria-live="polite">
+
+                    {% if not messages_list %}
+                        <div class="bubble assistant">
+                            <b>Welcome to LearnLens AI</b>
+
+                            <p>
+                                Ask a question about the lesson. I can help
+                                explain concepts and locate relevant topics
+                                in the transcript.
+                            </p>
+
+                            <div class="suggestions">
+                                <button type="button"
+                                        data-q="Summarize this video">
+                                    Summarize video
+                                </button>
+
+                                <button type="button"
+                                        data-q="What are the main topics covered?">
+                                    Main topics
+                                </button>
+
+                                <button type="button"
+                                        data-q="Explain a concept with an example">
+                                    Explain a concept
+                                </button>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% for msg in messages_list %}
+                        <div class="bubble {% if msg.role == 'user' %}user{% else %}assistant{% endif %}">
+
+                            <b>
+                                {% if msg.role == 'user' %}
+                                    You
+                                {% else %}
+                                    AI Tutor
+                                {% endif %}
+                            </b>
+
+                            <div class="message">{{ msg.content|study_markdown }}</div>
+
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+                <form class="ask-form"
+                      method="post"
+                      action="{% url 'ask_question' video.id %}">
+
+                    {% csrf_token %}
+
+                    <textarea
+                        id="question"
+                        name="question"
+                        class="form-control"
+                        rows="2"
+                        maxlength="2000"
+                        placeholder="Ask a question about this video..."
+                        aria-label="Ask your tutor"
+                        required></textarea>
+
+                    <button type="submit" class="btn btn-primary">
+                        Send ➤
+                    </button>
+
+                </form>
+
+                <p class="disclaimer">
+                    AI can make mistakes. Verify important details using
+                    the original transcript.
+                </p>
+
+            </section>
+        </div>
+
+    </div>
+
+    <!-- STUDY TOOLS -->
+    <section class="study">
+
+        <h2>Personalized Study Tools</h2>
+
+        <p>
+            Create a summary, detailed revision notes or practice questions
+            from the current video.
+        </p>
+
+        <div class="actions">
+
+            <form method="post"
+                  action="{% url 'generate_summary' video.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">
+                    Generate Summary
+                </button>
+            </form>
+
+            <form method="post"
+                  action="{% url 'generate_notes' video.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-primary">
+                    Generate Revision Notes
+                </button>
+            </form>
+
+            <form method="post"
+                  action="{% url 'generate_mcqs' video.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-primary">
+                    Generate Practice MCQs
+                </button>
+            </form>
+
+        </div>
+
+    </section>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    // TAB SWITCHING
+    const tabButtons = document.querySelectorAll("[data-tab]");
+    const panes = document.querySelectorAll(".pane");
+
+    tabButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            tabButtons.forEach(function (item) {
+                item.classList.remove("active");
+                item.setAttribute("aria-selected", "false");
+            });
+
+            panes.forEach(function (pane) {
+                pane.classList.remove("active");
+            });
+
+            button.classList.add("active");
+            button.setAttribute("aria-selected", "true");
+
+            const targetPane = document.getElementById(button.dataset.tab);
+
+            if (targetPane) {
+                targetPane.classList.add("active");
+            }
+        });
+    });
+
+    // JUMP TO TRANSCRIPT TIMESTAMP
+    document.querySelectorAll(".jump").forEach(function (button) {
+        button.addEventListener("click", function () {
+            const seconds = Math.max(
+                0,
+                parseInt(button.dataset.time || "0", 10) || 0
+            );
+
+            const player = document.getElementById("ytplayer");
+
+            if (player) {
+                player.src =
+                    "https://www.youtube-nocookie.com/embed/" +
+                    "{{ video.youtube_id|escapejs }}" +
+                    "?start=" + seconds + "&autoplay=1";
+            }
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
+    });
+
+    // PRE-FILLED AI TUTOR QUESTIONS
+    document.querySelectorAll("[data-q]").forEach(function (button) {
+        button.addEventListener("click", function () {
+            const question = document.getElementById("question");
+
+            if (question) {
+                question.value = button.dataset.q;
+                question.focus();
+            }
+        });
+    });
+
+    // TRANSCRIPT SEARCH
+    const search = document.getElementById("searchTranscript");
+
+    if (search) {
+        search.addEventListener("input", function () {
+            const query = search.value.toLowerCase().trim();
+
+            document.querySelectorAll(".transcript-row").forEach(
+                function (row) {
+                    row.style.display =
+                        row.innerText.toLowerCase().includes(query)
+                            ? "flex"
+                            : "none";
+                }
+            );
+        });
+    }
+
+    // COPY GENERATED STUDY MATERIAL
+    document.querySelectorAll(".copy-note").forEach(function (button) {
+        button.addEventListener("click", async function () {
+            const content = button
+                .closest(".note")
+                .querySelector(".note-content");
+
+            if (!content) return;
+
+            const originalText = button.innerText;
+
+            try {
+                await navigator.clipboard.writeText(content.innerText);
+                button.innerText = "Copied!";
+
+                window.setTimeout(function () {
+                    button.innerText = originalText;
+                }, 1500);
+            } catch (error) {
+                console.error("Could not copy study material:", error);
+                button.innerText = "Copy failed";
+
+                window.setTimeout(function () {
+                    button.innerText = originalText;
+                }, 1500);
+            }
+        });
+    });
+
+    // SCROLL CHAT TO LATEST MESSAGE
+    const chat = document.getElementById("chat");
+
+    if (chat) {
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+});
+</script>
+{% endblock %}
